@@ -39,9 +39,6 @@ def main_loop(game):
         game_map = game.game_map
         command_queue = []
 
-        direction_order = [Direction.North, Direction.South, Direction.East, Direction.West,
-                           Direction.Still]
-
         position_choices = []
         for ship in me.get_ships():
             # If a ship has no state (because it s bare born), make it collect.
@@ -49,11 +46,11 @@ def main_loop(game):
                 me.ship_states[ship.id] = ShipState(Behavior.COLLECT)
 
             if me.ship_states[ship.id].behavior is Behavior.COLLECT:
-                position_options = ship.position.get_surrounding_cardinals() + [ship.position]
+                position_options = ship.position.get_surrounding_cardinals()
                 position_dict = {}
                 halite_dict = {}
 
-                for n, direction in enumerate(direction_order):
+                for n, direction in enumerate(Direction.get_all_cardinals()):
                     position_dict[direction] = position_options[n]
 
                 for direction in position_dict:
