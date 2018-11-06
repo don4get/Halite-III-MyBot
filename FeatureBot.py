@@ -23,24 +23,25 @@ def main():
     game = hlt.Game()
     game.ready("FeatureBot")
 
-    main_loop(game)
-
-
-def main_loop(game):
     while True:
-        game.update_frame()
-        me = game.me
+        loop(game)
 
-        commands = []
-        position_goals = []
 
-        for ship in me.get_ships():
-            logics.choose_behavior(ship, game.game_map, me, position_goals, commands)
+def loop(game):
 
-        banker.build_ships(game, me, commands)
+    game.update_frame()
+    me = game.me
 
-        # Send your moves back to the game environment, ending this turn.
-        game.end_turn(commands)
+    commands = []
+    position_goals = []
+
+    for ship in me.get_ships():
+        logics.choose_behavior(ship, game.game_map, me, position_goals, commands)
+
+    banker.build_ships(game, me, commands)
+
+    # Send your moves back to the game environment, ending this turn.
+    game.end_turn(commands)
 
 
 main()
