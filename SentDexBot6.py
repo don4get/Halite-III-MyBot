@@ -18,7 +18,7 @@ while True:
     me = game.me
 
     '''comes from game, game comes from before the loop, hlt.Game points to networking, which is where you will
-    find the actual Game class (hlt/networking.py). From here, GameMap is imported from hlt/game_map.py.
+    find the actual Game class (hlt/game.py). From here, GameMap is imported from hlt/game_map.py.
 
     open that file to seee all the things we do with game map.'''
     game_map = game.game_map  # game map data. Recall game is
