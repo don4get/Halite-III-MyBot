@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-###########
-Feature bot
-###########
+#########
+Autopilot
+#########
 
 
 """
