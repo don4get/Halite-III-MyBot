@@ -30,4 +30,4 @@ class ShipState:
 
     def __init__(self, behavior):
         self.behavior = behavior
-        self.goal_position = None
+        self.position_goal = None

@@ -38,8 +38,8 @@ def main_loop(game):
 
         game_map = game.game_map
         command_queue = []
+        position_goals = []
 
-        position_choices = []
         for ship in me.get_ships():
             # If a ship has no state (because it s bare born), make it collect.
             if ship.id not in me.ship_states:
@@ -59,17 +59,17 @@ def main_loop(game):
 
                     # Consider a position as a potential ship goal if it is not already aimed by
                     # another one.
-                    if position_dict[direction] not in position_choices:
+                    if position_dict[direction] not in position_goals:
                         # Make current ship position 4 times more interesting than the others
                         if direction == Direction.Still:
                             halite_amount *= 4
                         halite_dict[direction] = halite_amount
 
                 directional_choice = max(halite_dict, key=halite_dict.get)
-                position_choices.append(position_dict[directional_choice])
+                position_goal = position_dict[directional_choice]
+                position_goals.append(position_goal)
 
-                movement = game_map.naive_navigate(ship,
-                                                   ship.position + Position(*directional_choice))
+                movement = game_map.naive_navigate(ship, position_goal)
                 command = ship.move(movement)
                 command_queue.append(command)
 
@@ -79,8 +79,8 @@ def main_loop(game):
             elif me.ship_states[ship.id].behavior is Behavior.DEPOSIT:
                 movement = game_map.naive_navigate(ship, me.shipyard.position)
                 upcoming_position = ship.position + Position(*movement)
-                if upcoming_position not in position_choices:
-                    position_choices.append(upcoming_position)
+                if upcoming_position not in position_goals:
+                    position_goals.append(upcoming_position)
                     command_queue.append(ship.move(movement))
 
                     # If current movement is still, ship is at shipyard and deposit is done. Make
@@ -90,7 +90,7 @@ def main_loop(game):
                 else:
                     # In this case, moving will cause two boats to sink, so wait until the other
                     # boat to pass.
-                    position_choices.append(ship.position)
+                    position_goals.append(ship.position)
                     movement = game_map.naive_navigate(ship,
                                                        ship.position + Position(*Direction.Still))
                     command = ship.move(movement)
