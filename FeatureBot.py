@@ -13,6 +13,8 @@ from hlt.positionals import Direction, Position
 import random
 import logging
 import math
+from hlt.behaviors import Behavior
+from hlt.ship_state import ShipState
 
 __author__ = "don4get"
 __copyright__ = ""
@@ -44,9 +46,9 @@ def main_loop(game):
         for ship in me.get_ships():
             # If a ship has no state (because it s bare born), make it collect.
             if ship.id not in me.ship_states:
-                me.ship_states[ship.id] = "collecting"
+                me.ship_states[ship.id] = ShipState(Behavior.COLLECT)
 
-            if me.ship_states[ship.id] == "collecting":
+            if me.ship_states[ship.id].behavior is Behavior.COLLECT:
                 position_options = ship.position.get_surrounding_cardinals() + [ship.position]
                 position_dict = {}
                 halite_dict = {}
@@ -75,9 +77,9 @@ def main_loop(game):
                 command_queue.append(command)
 
                 if ship.halite_amount >= constants.MAX_HALITE:
-                    me.ship_states[ship.id] = "depositing"
+                    me.ship_states[ship.id].behavior = Behavior.DEPOSIT
 
-            elif me.ship_states[ship.id] == "depositing":
+            elif me.ship_states[ship.id].behavior is Behavior.DEPOSIT:
                 movement = game_map.naive_navigate(ship, me.shipyard.position)
                 upcoming_position = ship.position + Position(*movement)
                 if upcoming_position not in position_choices:
@@ -87,7 +89,7 @@ def main_loop(game):
                     # If current movement is still, ship is at shipyard and deposit is done. Make
                     #  it collect again.
                     if movement == Direction.Still:
-                        me.ship_states[ship.id] = "collecting"
+                        me.ship_states[ship.id].behavior = Behavior.COLLECT
                 else:
                     # In this case, moving will cause two boats to sink, so wait until the other
                     # boat to pass.
