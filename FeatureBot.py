@@ -37,7 +37,7 @@ def main_loop(game):
         me = game.me
 
         game_map = game.game_map
-        command_queue = []
+        commands = []
         position_goals = []
 
         for ship in me.get_ships():
@@ -71,7 +71,7 @@ def main_loop(game):
 
                 movement = game_map.naive_navigate(ship, position_goal)
                 command = ship.move(movement)
-                command_queue.append(command)
+                commands.append(command)
 
                 if ship.halite_amount >= constants.MAX_HALITE:
                     me.ship_states[ship.id].behavior = Behavior.DEPOSIT
@@ -81,7 +81,7 @@ def main_loop(game):
                 upcoming_position = ship.position + Position(*movement)
                 if upcoming_position not in position_goals:
                     position_goals.append(upcoming_position)
-                    command_queue.append(ship.move(movement))
+                    commands.append(ship.move(movement))
 
                     # If current movement is still, ship is at shipyard and deposit is done. Make
                     #  it collect again.
@@ -94,15 +94,15 @@ def main_loop(game):
                     movement = game_map.naive_navigate(ship,
                                                        ship.position + Position(*Direction.Still))
                     command = ship.move(movement)
-                    command_queue.append(command)
+                    commands.append(command)
 
         # ship costs 1000, dont make a ship on a ship or they both sink
         if len(me.get_ships()) < math.ceil(game.turn_number / 25):
             if me.halite_amount >= 1000 and not game_map[me.shipyard].is_occupied:
-                command_queue.append(me.shipyard.spawn())
+                commands.append(me.shipyard.spawn())
 
         # Send your moves back to the game environment, ending this turn.
-        game.end_turn(command_queue)
+        game.end_turn(commands)
 
 
 main()
