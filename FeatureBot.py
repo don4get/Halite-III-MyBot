@@ -30,7 +30,6 @@ def main():
 
 
 def main_loop(game):
-    ship_states = {}
     while True:
         game.update_frame()
         me = game.me
@@ -44,10 +43,10 @@ def main_loop(game):
         position_choices = []
         for ship in me.get_ships():
             # If a ship has no state (because it s bare born), make it collect.
-            if ship.id not in ship_states:
-                ship_states[ship.id] = "collecting"
+            if ship.id not in me.ship_states:
+                me.ship_states[ship.id] = "collecting"
 
-            if ship_states[ship.id] == "collecting":
+            if me.ship_states[ship.id] == "collecting":
                 position_options = ship.position.get_surrounding_cardinals() + [ship.position]
                 position_dict = {}
                 halite_dict = {}
@@ -76,9 +75,9 @@ def main_loop(game):
                 command_queue.append(command)
 
                 if ship.halite_amount >= constants.MAX_HALITE:
-                    ship_states[ship.id] = "depositing"
+                    me.ship_states[ship.id] = "depositing"
 
-            elif ship_states[ship.id] == "depositing":
+            elif me.ship_states[ship.id] == "depositing":
                 movement = game_map.naive_navigate(ship, me.shipyard.position)
                 upcoming_position = ship.position + Position(*movement)
                 if upcoming_position not in position_choices:
@@ -88,7 +87,7 @@ def main_loop(game):
                     # If current movement is still, ship is at shipyard and deposit is done. Make
                     #  it collect again.
                     if movement == Direction.Still:
-                        ship_states[ship.id] = "collecting"
+                        me.ship_states[ship.id] = "collecting"
                 else:
                     # In this case, moving will cause two boats to sink, so wait until the other
                     # boat to pass.
