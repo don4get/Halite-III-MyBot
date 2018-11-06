@@ -13,7 +13,7 @@ from hlt.positionals import Direction, Position
 import random
 import logging
 import math
-from hlt.behaviors import Behavior
+from hlt.behaviors import Behavior, step_collect, step_deposit
 from hlt.ship_state import ShipState
 
 __author__ = "don4get"
@@ -46,57 +46,20 @@ def main_loop(game):
                 me.ship_states[ship.id] = ShipState(Behavior.COLLECT)
 
             if me.ship_states[ship.id].behavior is Behavior.COLLECT:
-                position_options = ship.position.get_surrounding_cardinals()
-                position_dict = {}
-                halite_dict = {}
 
-                for n, direction in enumerate(Direction.get_all_cardinals()):
-                    position_dict[direction] = position_options[n]
-
-                for direction in position_dict:
-                    position = position_dict[direction]
-                    halite_amount = game_map[position].halite_amount
-
-                    # Consider a position as a potential ship goal if it is not already aimed by
-                    # another one.
-                    if position_dict[direction] not in position_goals:
-                        # Make current ship position 4 times more interesting than the others
-                        if direction == Direction.Still:
-                            halite_amount *= 4
-                        halite_dict[direction] = halite_amount
-
-                directional_choice = max(halite_dict, key=halite_dict.get)
-                position_goal = position_dict[directional_choice]
-                position_goals.append(position_goal)
-
-                movement = game_map.naive_navigate(ship, position_goal)
-                command = ship.move(movement)
-                commands.append(command)
+                step_collect(ship, game_map, position_goals, commands)
 
                 if ship.halite_amount >= constants.MAX_HALITE:
                     me.ship_states[ship.id].behavior = Behavior.DEPOSIT
 
             elif me.ship_states[ship.id].behavior is Behavior.DEPOSIT:
-                movement = game_map.naive_navigate(ship, me.shipyard.position)
-                upcoming_position = ship.position + Position(*movement)
-                if upcoming_position not in position_goals:
-                    position_goals.append(upcoming_position)
-                    commands.append(ship.move(movement))
 
-                    # If current movement is still, ship is at shipyard and deposit is done. Make
-                    #  it collect again.
-                    if movement == Direction.Still:
-                        me.ship_states[ship.id].behavior = Behavior.COLLECT
-                else:
-                    # In this case, moving will cause two boats to sink, so wait until the other
-                    # boat to pass.
-                    position_goals.append(ship.position)
-                    movement = game_map.naive_navigate(ship,
-                                                       ship.position + Position(*Direction.Still))
-                    command = ship.move(movement)
-                    commands.append(command)
+                step_deposit(ship, game_map, me, position_goals, commands)
 
-        # ship costs 1000, dont make a ship on a ship or they both sink
+                if ship.position == me.shipyard.position:
+                    me.ship_states[ship.id].behavior = Behavior.COLLECT
+
+        # ship costs 1000, don t make a ship on a ship or they both sink
         if len(me.get_ships()) < math.ceil(game.turn_number / 25):
             if me.halite_amount >= 1000 and not game_map[me.shipyard].is_occupied:
                 commands.append(me.shipyard.spawn())

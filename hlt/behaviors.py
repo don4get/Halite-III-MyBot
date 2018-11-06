@@ -13,6 +13,7 @@ from hlt.positionals import Direction, Position
 import random
 import logging
 import math
+from hlt.autopilot import compute_position_goal
 
 __author__ = "don4get"
 __copyright__ = ""
@@ -31,3 +32,30 @@ class Behavior:
     DEPOSIT = 1
     ATTACK = 2
     COLONIZE = 3
+
+
+def step_deposit(ship, game_map, me, position_goals, commands):
+    movement = game_map.naive_navigate(ship, me.shipyard.position)
+    upcoming_position = ship.position + Position(*movement)
+    if upcoming_position not in position_goals:
+        position_goals.append(upcoming_position)
+        commands.append(ship.move(movement))
+
+        # If current movement is still, ship is at shipyard and deposit is done. Make
+        #  it collect again.
+    else:
+        # In this case, moving will cause two boats to sink, so wait until the other
+        # boat to pass.
+        position_goals.append(ship.position)
+        movement = game_map.naive_navigate(ship,
+                                           ship.position + Position(*Direction.Still))
+        command = ship.move(movement)
+        commands.append(command)
+
+
+def step_collect(ship, game_map, position_goals, commands):
+    position_goal = compute_position_goal(ship, game_map, position_goals)
+    position_goals.append(position_goal)
+    movement = game_map.naive_navigate(ship, position_goal)
+    command = ship.move(movement)
+    commands.append(command)

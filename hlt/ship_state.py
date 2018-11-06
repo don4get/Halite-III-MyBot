@@ -31,3 +31,4 @@ class ShipState:
     def __init__(self, behavior):
         self.behavior = behavior
         self.position_goal = None
+        self.path = []
