@@ -47,8 +47,7 @@ def step_deposit(ship, game_map, me, position_goals, commands):
         # In this case, moving will cause two boats to sink, so wait until the other
         # boat to pass.
         position_goals.append(ship.position)
-        movement = game_map.naive_navigate(ship,
-                                           ship.position + Position(*Direction.Still))
+        movement = Direction.Still
         command = ship.move(movement)
         commands.append(command)
 

@@ -5,6 +5,7 @@ from .entity import Entity, Shipyard, Ship, Dropoff
 from .player import Player
 from .positionals import Direction, Position
 from .common import read_input
+import logging
 
 
 class MapCell:
@@ -144,6 +145,27 @@ class GameMap:
         if distance.y != 0:
             possible_moves.append(y_cardinality if distance.y < (self.height / 2)
                                   else Direction.invert(y_cardinality))
+        return possible_moves
+
+    def get_safe_moves(self, source, destination):
+        """
+        Return the Direction(s) to move closer to the target point, or empty if the points are the same.
+        This move mechanic does not account for collisions. The multiple directions are if both directional movements
+        are viable.
+        :param source: The starting position
+        :param destination: The destination towards which you wish to move your object.
+        :return: A list of valid (closest) Directions towards your target.
+        """
+        possible_moves = [Direction.Still]
+        unsafe_moves = self.get_unsafe_moves(source, destination)
+
+        source = self.normalize(source)
+        for unsafe_move in unsafe_moves:
+            unverified_destination = source.directional_offset(unsafe_move)
+            unverified_destination = self.normalize(unverified_destination)
+            if self[unverified_destination].is_empty:
+                possible_moves.append(unsafe_move)
+
         return possible_moves
 
     def naive_navigate(self, ship, destination):

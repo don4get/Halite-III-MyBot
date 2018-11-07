@@ -2,6 +2,7 @@ from .entity import Shipyard, Ship, Dropoff
 from .positionals import Position
 from .common import read_input
 
+
 class Player:
     """
     Player object containing all items/metadata pertinent to the player.

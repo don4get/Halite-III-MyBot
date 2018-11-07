@@ -8,6 +8,7 @@ Banker
 """
 
 import math
+from hlt import constants
 
 __author__ = "don4get"
 __copyright__ = ""
@@ -19,6 +20,7 @@ __status__ = "Production"
 
 def build_ships(game, me, commands):
     # ship costs 1000, don t make a ship on a ship or they both sink
-    if len(me.get_ships()) < math.ceil(game.turn_number / 25):
-        if me.halite_amount >= 1000 and not game.game_map[me.shipyard].is_occupied:
+    #if len(me.get_ships()) < math.ceil(game.turn_number / 25):
+    if game.turn_number < constants.MAX_TURNS-100:
+        if me.halite_amount >= constants.SHIP_COST and not game.game_map[me.shipyard].is_occupied:
             commands.append(me.shipyard.spawn())

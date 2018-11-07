@@ -8,6 +8,7 @@ Autopilot
 """
 
 from hlt.positionals import Direction
+import logging
 
 __author__ = "don4get"
 __copyright__ = ""
@@ -29,7 +30,8 @@ def compute_position_goal(ship, game_map, position_goals):
 
         # Consider a position as a potential ship goal if it is not already aimed by
         # another one.
-        if position_dict[direction] not in position_goals:
+        if position_dict[direction] not in position_goals and direction \
+                in game_map.get_safe_moves(ship.position, position_dict[direction]):
             # Make current ship position 4 times more interesting than the others
             if direction == Direction.Still:
                 halite_amount *= 4

@@ -10,6 +10,7 @@ Feature bot
 import hlt
 from hlt import logics
 from hlt import banker
+import logging
 
 __author__ = "don4get"
 __copyright__ = ""
