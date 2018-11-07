@@ -56,6 +56,7 @@ class Player:
         return ship_id in self._ships
 
 
+
     @staticmethod
     def _generate():
         """

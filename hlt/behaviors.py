@@ -13,6 +13,7 @@ from hlt.positionals import Direction, Position
 import random
 import logging
 import math
+from hlt.game_map import GameMap
 from hlt.autopilot import compute_position_goal
 
 __author__ = "don4get"
@@ -32,10 +33,14 @@ class Behavior:
     DEPOSIT = 1
     ATTACK = 2
     COLONIZE = 3
+    GO_HOME = 4
 
 
 def step_deposit(ship, game_map, me, position_goals, commands):
-    movement = game_map.naive_navigate(ship, me.shipyard.position)
+
+    depots = me.get_dropoffs() + [me.shipyard]
+    closest_depot = game_map.find_closest_entity(ship.position, depots)
+    movement = game_map.naive_navigate(ship, closest_depot.position)
     upcoming_position = ship.position + Position(*movement)
     if upcoming_position not in position_goals:
         position_goals.append(upcoming_position)
@@ -58,3 +63,17 @@ def step_collect(ship, game_map, position_goals, commands):
     movement = game_map.naive_navigate(ship, position_goal)
     command = ship.move(movement)
     commands.append(command)
+
+
+def step_colonize(ship, game_map, me, position_goals, commands):
+    position_goal = me.ship_states[ship.id].position_goal
+    position_goals.append(position_goal)
+
+    if ship.position == position_goal:
+        command = ship.make_dropoff()
+    else:
+        movement = game_map.naive_navigate(ship, position_goal)
+        command = ship.move(movement)
+
+    commands.append(command)
+

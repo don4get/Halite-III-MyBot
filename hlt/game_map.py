@@ -5,6 +5,7 @@ from .entity import Entity, Shipyard, Ship, Dropoff
 from .player import Player
 from .positionals import Direction, Position
 from .common import read_input
+from math import hypot
 import logging
 
 
@@ -73,6 +74,9 @@ class GameMap:
         self.width = width
         self.height = height
         self._cells = cells
+
+    def get_cells(self):
+        return self._cells
 
     def __getitem__(self, location):
         """
@@ -185,6 +189,16 @@ class GameMap:
                 return direction
 
         return Direction.Still
+
+    def find_closest_entity(self, position_goal, entity_list):
+        d_max = hypot(self.height, self.width)
+        closest_entity = None
+        for entity in entity_list:
+            d = self.calculate_distance(entity.position, position_goal)
+            if d < d_max:
+                d_max = d
+                closest_entity = entity
+        return closest_entity
 
     @staticmethod
     def _generate():
