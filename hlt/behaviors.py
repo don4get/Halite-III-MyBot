@@ -33,7 +33,7 @@ class Behavior:
     DEPOSIT = 1
     ATTACK = 2
     COLONIZE = 3
-    GO_HOME = 4
+    GOTO_HOME = 4
 
 
 def step_deposit(ship, game_map, me, position_goals, commands):
@@ -77,3 +77,26 @@ def step_colonize(ship, game_map, me, position_goals, commands):
 
     commands.append(command)
 
+
+def step_goto_home(ship, game_map, me, position_goals, commands):
+    depots = me.get_dropoffs() + [me.shipyard]
+    closest_depot = game_map.find_closest_entity(ship.position, depots)
+    movement = game_map.crush_depots_navigate(ship, closest_depot.position)
+    upcoming_position = ship.position + Position(*movement)
+    if upcoming_position not in position_goals:
+        if upcoming_position is not me.shipyard.position:
+            position_goals.append(upcoming_position)
+        commands.append(ship.move(movement))
+
+        # If current movement is still, ship is at shipyard and deposit is done. Make
+        #  it collect again.
+    else:
+        # In this case, moving will cause two boats to sink, so wait until the other
+        # boat to pass.
+        position_goals.append(ship.position)
+        movement = Direction.Still
+        command = ship.move(movement)
+        commands.append(command)
+
+    if me.shipyard.position in position_goals:
+        position_goals.remove(me.shipyard.position)

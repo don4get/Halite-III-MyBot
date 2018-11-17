@@ -32,12 +32,11 @@ def loop(game):
 
     game.update_frame()
     me = game.me
-
     commands = []
     position_goals = []
 
     for ship in me.get_ships():
-        logics.choose_behavior(ship, game.game_map, me, position_goals, commands)
+        logics.choose_behavior(ship, game.game_map, me, game.turn_number, position_goals, commands)
 
     banker.build_ships(game, me, commands)
 

@@ -8,7 +8,7 @@ Logics
 """
 
 from hlt.positionals import Direction
-from hlt.behaviors import Behavior, step_collect, step_deposit, step_colonize
+from hlt.behaviors import *
 from hlt.ship_state import ShipState
 from hlt import constants
 import logging
@@ -21,11 +21,16 @@ __maintainer__ = "don4get"
 __status__ = "Production"
 
 
-def choose_behavior(ship, game_map, me, position_goals, commands):
+def choose_behavior(ship, game_map, me, turn_number, position_goals, commands):
     # If a ship has no state (because it s bare born), make it collect.
-
     if ship.id not in me.ship_states:
         me.ship_states[ship.id] = ShipState(Behavior.COLLECT)
+
+    depots = me.get_dropoffs()+[me.shipyard]
+    closest_depot = game_map.find_closest_entity(ship.position, depots)
+    distance_to_home = game_map.calculate_distance(ship.position, closest_depot.position)
+    if distance_to_home * 2 > 400 - turn_number:
+        me.ship_states[ship.id].behavior = Behavior.GOTO_HOME
 
     if me.ship_states[ship.id].behavior is Behavior.COLLECT:
 
@@ -45,3 +50,6 @@ def choose_behavior(ship, game_map, me, position_goals, commands):
 
     elif me.ship_states[ship.id].behavior is Behavior.COLONIZE:
         step_colonize(ship, game_map, me, position_goals, commands)
+
+    elif me.ship_states[ship.id].behavior is Behavior.GOTO_HOME:
+        step_goto_home(ship, game_map, me, position_goals, commands)

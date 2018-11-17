@@ -190,6 +190,24 @@ class GameMap:
 
         return Direction.Still
 
+    def crush_depots_navigate(self, ship, destination):
+        """
+        Returns a singular safe move towards the destination.
+
+        :param ship: The ship to move.
+        :param destination: Ending position
+        :return: A direction.
+        """
+        # No need to normalize destination, since get_unsafe_moves
+        # does that
+        for direction in self.get_unsafe_moves(ship.position, destination):
+            target_pos = ship.position.directional_offset(direction)
+            if self[target_pos].has_structure or not self[target_pos].is_occupied:
+                self[target_pos].mark_unsafe(ship)
+                return direction
+
+        return Direction.Still
+
     def find_closest_entity(self, position_goal, entity_list):
         d_max = hypot(self.height, self.width)
         closest_entity = None
@@ -199,6 +217,17 @@ class GameMap:
                 d_max = d
                 closest_entity = entity
         return closest_entity
+
+    def find_wealthiest_location(self):
+        halite_amount_max = 0
+        best_cell = None
+        for row in self.get_cells():
+            for cell in row:
+                if cell.halite_amount > halite_amount_max:
+                    halite_amount_max = cell.halite_amount
+                    best_cell = cell
+
+        return best_cell.position
 
     @staticmethod
     def _generate():

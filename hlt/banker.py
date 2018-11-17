@@ -34,7 +34,7 @@ def build_ships(game, me, commands):
 
 
 def order_ship_to_colonize(game, me):
-    best_location = find_best_drop_off_location(game, me)
+    best_location = game.game_map.find_wealthiest_location()
     closest_ship_id = game.game_map.find_closest_entity(best_location, me.get_ships()).id
     me.ship_states[closest_ship_id].behavior = Behavior.COLONIZE
     me.ship_states[closest_ship_id].position_goal = best_location
@@ -42,14 +42,3 @@ def order_ship_to_colonize(game, me):
 
 
 
-def find_best_drop_off_location(game, me):
-    halite_amount_max = 0
-    best_cell = None
-    logging.info(f"{game.game_map.get_cells()}")
-    for row in game.game_map.get_cells():
-        for cell in row:
-            if cell.halite_amount > halite_amount_max:
-                halite_amount_max = cell.halite_amount
-                best_cell = cell
-
-    return best_cell.position
