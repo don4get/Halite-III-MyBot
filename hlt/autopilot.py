@@ -36,6 +36,9 @@ def compute_position_goal(ship, game_map, position_goals):
             if direction == Direction.Still:
                 halite_amount *= 4
             halite_dict[direction] = halite_amount
-    directional_choice = max(halite_dict, key=halite_dict.get)
+    try:
+        directional_choice = max(halite_dict, key=halite_dict.get)
+    except ValueError:
+        directional_choice = Direction.Still
     position_goal = position_dict[directional_choice]
     return position_goal
