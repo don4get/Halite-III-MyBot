@@ -1,7 +1,24 @@
 from plotly.offline import plot
 import plotly.graph_objs as go
 
-extract_map('replays/out.txt')
+# Open file and read the map
+file = open('replays/20181124-155646+0100-1543071405-32-32.txt')
+
+map = []
+width = 0
+height = 0
+for i, line in enumerate(file):
+    if i == 4:
+        size = [int(num) for num in line.split()]
+        width = size[0]
+        height = size[1]
+        print(width)
+        print(height)
+    if i>4 and i<4+width:
+        map.append([int(num) for num in line.split()])
+
+file.close()
+
 
 # Draw map
 trace = go.Heatmap(z = map)
@@ -30,22 +47,3 @@ layout = go.Layout(
 )
 fig = go.Figure(data=data, layout=layout)
 plot(fig, filename='halite-map.html')
-
-def extract_map(filename)
-    # Open file and read the map
-    file = open(filename)
-
-    map = []
-    width = 0
-    height = 0
-    for i, line in enumerate(file):
-        if i == 4:
-            size = [int(num) for num in line.split()]
-            width = size[0]
-            height = size[1]
-            print(width)
-            print(height)
-        if i > 4 and i <= 4 + width:
-            map.append([int(num) for num in line.split()])
-
-    file.close()
