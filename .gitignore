@@ -113,3 +113,5 @@ replays/
 StarterPackReadme.md
 *.zip
 .idea/
+
+maps/*
