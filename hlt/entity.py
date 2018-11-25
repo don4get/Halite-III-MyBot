@@ -79,6 +79,20 @@ class Ship(Entity):
         """
         return "{} {} {}".format(commands.MOVE, self.id, commands.STAY_STILL)
 
+    def update(self, position, halite_amount):
+        self.position = position
+        self.halite_amount = halite_amount
+        return self
+
+    @staticmethod
+    def _get_info():
+        """
+        Gets the info about an instance of a ship.
+        """
+        ship_id, x_position, y_position, halite = map(int, read_input().split())
+        position = Position(x_position, y_position)
+        return ship_id, position, halite
+
     @staticmethod
     def _generate(player_id):
         """

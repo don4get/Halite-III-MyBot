@@ -12,6 +12,7 @@ class Player:
         self.shipyard = shipyard
         self.halite_amount = halite
         self._ships = {}
+        self._old_ship_ids = []
         self._dropoffs = {}
         self.ship_states = {}
 
@@ -75,5 +76,25 @@ class Player:
         :return: nothing.
         """
         self.halite_amount = halite
-        self._ships = {id: ship for (id, ship) in [Ship._generate(self.id) for _ in range(num_ships)]}
+
+        ### Update ships ###
+        ships_info = [[ship_id, ship_position, ship_halite] for (ship_id, ship_position, ship_halite) in
+            [Ship._get_info() for _ in range(num_ships)]]
+        ships_alive = []
+        for line in ships_info:
+            ship_id = line[0]
+            ship_position = line[1]
+            ship_halite = line[2]
+            ships_alive.append(ship_id)
+            if ship_id in self.old_ship_ids:
+                self.get_ship(ship_id).update(ship_position, ship_halite)
+            else:
+                ship = Ship(self.id, ship_id, ship_position, ship_halite)
+                self._ships[ship_id] = ship
+        dead_ships = set(self._ships.keys()) - set(ships_alive)
+        for dead_ship  in dead_ships:
+            self._ships.pop(dead_ship)
+        self.old_ship_ids = self._ships.keys()
+
+        ### Update dropoffs ###
         self._dropoffs = {id: dropoff for (id, dropoff) in [Dropoff._generate(self.id) for _ in range(num_dropoffs)]}
