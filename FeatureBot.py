@@ -9,7 +9,7 @@ Feature bot
 
 import hlt
 from hlt import logics
-from hlt import banker
+from hlt.banker import Banker
 import logging
 
 __author__ = "don4get"
@@ -19,29 +19,35 @@ __version__ = "1.0.0"
 __maintainer__ = "don4get"
 __status__ = "Production"
 
+class Bot:
+    def __init__(self):
+        self._game = hlt.Game()
+        self._game.ready("FeatureBot")
+        self._banker = Banker()
+
+    def play_game(self):
+        while True:
+            self.loop()
+
+    def loop(self):
+        self._game.update_frame()
+        me = self._game.me
+        commands = []
+        position_goals = []
+
+        for ship in me.get_ships():
+            logics.choose_behavior(ship, self._game.game_map, me, self._game.turn_number,
+                                   position_goals,
+                                   commands)
+
+        commands.extend(self._banker.build_ships(self._game))
+
+        self._game.end_turn(commands)
+
 
 def main():
-    game = hlt.Game()
-    game.ready("FeatureBot")
-
-    while True:
-        loop(game)
-
-
-def loop(game):
-
-    game.update_frame()
-    me = game.me
-    commands = []
-    position_goals = []
-
-    for ship in me.get_ships():
-        logics.choose_behavior(ship, game.game_map, me, game.turn_number, position_goals, commands)
-
-    banker.build_ships(game, me, commands)
-
-    # Send your moves back to the game environment, ending this turn.
-    game.end_turn(commands)
+    my_bot = Bot()
+    my_bot.play_game()
 
 
 main()

@@ -21,24 +21,28 @@ __maintainer__ = "don4get"
 __status__ = "Production"
 
 
-def build_ships(game, me, commands):
-    # ship costs 1000, don t make a ship on a ship or they both sink
-    #if len(me.get_ships()) < math.ceil(game.turn_number / 25):
-    if game.turn_number < constants.MAX_TURNS-100:
-        if len(me.get_ships()) > (len(me.get_dropoffs()) + 1) * 16:
-            if me.halite_amount >= constants.DROPOFF_COST:
-                order_ship_to_colonize(game, me)
+class Banker:
+    def __init__(self):
+        self._lastProductionCommands = []
 
-        elif me.halite_amount >= constants.SHIP_COST and not game.game_map[me.shipyard].is_occupied:
-            commands.append(me.shipyard.spawn())
+    def build_ships(self, game):
+        me = game.me
+        production_commands = []
+        # ship costs 1000, don t make a ship on a ship or they both sink
+        if game.turn_number < constants.MAX_TURNS-100:
+            if len(me.get_ships()) > (len(me.get_dropoffs()) + 1) * 16:
+                if me.halite_amount >= constants.DROPOFF_COST:
+                    self.order_ship_to_colonize(game)
 
+            elif me.halite_amount >= constants.SHIP_COST and not game.game_map[
+                    me.shipyard].is_occupied:
+                    production_commands.append(me.shipyard.spawn())
+        return production_commands
 
-def order_ship_to_colonize(game, me):
-    best_location = game.game_map.find_wealthiest_location()
-    closest_ship_id = game.game_map.find_closest_entity(best_location, me.get_ships()).id
-    me.ship_states[closest_ship_id].behavior = Behavior.COLONIZE
-    me.ship_states[closest_ship_id].position_goal = best_location
-    #me.get_ship(closest_ship_id).set_behavior(Behavior.COLONIZE)
-
-
-
+    @staticmethod
+    def order_ship_to_colonize(game):
+        me = game.me
+        best_location = game.game_map.find_wealthiest_location()
+        closest_ship_id = game.game_map.find_closest_entity(best_location, me.get_ships()).id
+        me.ship_states[closest_ship_id].behavior = Behavior.COLONIZE
+        me.ship_states[closest_ship_id].position_goal = best_location
