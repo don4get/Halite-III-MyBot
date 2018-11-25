@@ -8,8 +8,8 @@ Feature bot
 """
 
 import hlt
-from hlt import logics
 from hlt.banker import Banker
+from hlt.commander import Commander
 import logging
 
 __author__ = "don4get"
@@ -19,11 +19,13 @@ __version__ = "1.0.0"
 __maintainer__ = "don4get"
 __status__ = "Production"
 
+
 class Bot:
     def __init__(self):
         self._game = hlt.Game()
         self._game.ready("FeatureBot")
         self._banker = Banker()
+        self._commander = Commander()
 
     def play_game(self):
         while True:
@@ -32,15 +34,10 @@ class Bot:
     def loop(self):
         self._game.update_frame()
         me = self._game.me
+
         commands = []
-        position_goals = []
-
-        for ship in me.get_ships():
-            logics.choose_behavior(ship, self._game.game_map, me, self._game.turn_number,
-                                   position_goals,
-                                   commands)
-
-        commands.extend(self._banker.build_ships(self._game))
+        commands += self._commander.control_ships(self._game)
+        commands += self._banker.build_ships(self._game)
 
         self._game.end_turn(commands)
 
