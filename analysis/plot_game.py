@@ -23,27 +23,59 @@ file.close()
 # Draw map
 trace = go.Heatmap(z = map)
 data=[trace]
+
+# Fill in most of layout
 layout = go.Layout(
     xaxis=dict(
        range=[0, width],
        showgrid=False,
        zeroline=False,
        showline=False,
+       title='width',
        gridcolor='#bdbdbd',
        gridwidth=2,
-       zerolinecolor='#969696',
-       zerolinewidth=4,
-       linecolor='#636363',
-       linewidth=6
     ),
     yaxis=dict(
         range=[0, height],
         showgrid=False,
         zeroline=False,
         showline=False,
+        title='height',
         scaleanchor="x",
         scaleratio=1
-    )
+    ),
+    hovermode='closest',
+    plot_bgcolor='rgb(223, 232, 243)'
 )
-fig = go.Figure(data=data, layout=layout)
+
+figure = {
+    'data': [],
+    'layout': layout,
+    'frames': [],
+    'config': {'scrollzoom': True}
+}
+
+# Add sliders
+figure['layout']['sliders'] = {
+    'active': 0,
+    'yanchor': 'top',
+    'xanchor': 'left',
+    'currentvalue': {
+        'font': {'size': 20},
+        'prefix': 'text-before-value-on-display',
+        'visible': True,
+        'xanchor': 'right'
+    },
+    'transition': {'duration': 300, 'easing': 'cubic-in-out'},
+    'pad': {'b': 10, 't': 50},
+    'len': 0.9,
+    'x': 0.1,
+    'y': 0,
+    'steps': [...]
+}
+
+
+# Slider dictionary
+
+
 plot(fig, filename='halite-map.html')
