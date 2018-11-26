@@ -1,5 +1,8 @@
-import sys
+# HOW TO USE:
+# from root project -> $ cat <path-to-decompressed-replay> | python hlt/minimalist_game.py
 
+import sys
+import numpy as np
 
 class Ship:
     def __init__(self, id, x, y, halite):
@@ -91,7 +94,7 @@ class Game:
         # NOTE this is self.halite[y][x] NOT [x][y]
         self.halite = [list(map(int, input().split())) for y in range(Game.HEIGHT)]
         self.turn = 0
-        print("Hjax")
+        print("I ♡ CHICHITA!!")
         sys.stdout.flush()
 
     def tiles(self):
@@ -140,3 +143,11 @@ class Game:
     def end_frame(self):
         print(" ".join(self.commands))
         sys.stdout.flush()
+
+
+g = Game()
+for i in range(0, 400):
+    g.start_frame()
+    file = open(f"maps/{i}.csv", "w")
+    array = np.asarray(g.halite)
+    np.savetxt(file, array, delimiter=",")
