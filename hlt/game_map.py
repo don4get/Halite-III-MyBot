@@ -60,7 +60,10 @@ class MapCell:
         return not self.__eq__(other)
 
     def __str__(self):
-        return 'MapCell({}, halite={})'.format(self.position, self.halite_amount)
+        return f"MapCell({self.position}, halite={self.halite_amount})"
+
+    def __repr__(self):
+        return f"({self.position}, halite={self.halite_amount})"
 
 
 class GameMap:
