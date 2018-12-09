@@ -33,7 +33,6 @@ class Bot:
 
     def loop(self):
         self._game.update_frame()
-        me = self._game.me
 
         commands = []
         commands += self._commander.control_ships(self._game)

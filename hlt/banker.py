@@ -44,5 +44,5 @@ class Banker:
         me = game.me
         best_location = game.game_map.find_wealthiest_location()
         closest_ship_id = game.game_map.find_closest_entity(best_location, me.get_ships()).id
-        me.ship_states[closest_ship_id].behavior = Behavior.COLONIZE
-        me.ship_states[closest_ship_id].position_goal = best_location
+        me.get_ship(closest_ship_id).behavior = Behavior.COLONIZE
+        me.get_ship(closest_ship_id).position_goal = best_location

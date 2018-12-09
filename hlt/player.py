@@ -14,7 +14,6 @@ class Player:
         self._ships = {}
         self._old_ship_ids = []
         self._dropoffs = {}
-        self.ship_states = {}
 
     def get_ship(self, ship_id):
         """
