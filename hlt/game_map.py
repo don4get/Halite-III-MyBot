@@ -7,6 +7,7 @@ from .positionals import Direction, Position
 from .common import read_input
 from math import hypot
 import logging
+from functools import reduce
 
 
 class MapCell:
@@ -55,6 +56,9 @@ class MapCell:
 
     def __eq__(self, other):
         return self.position == other.position
+
+    def __lt__(self, other):
+        return self.halite_amount < other.halite_amount
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -221,16 +225,9 @@ class GameMap:
                 closest_entity = entity
         return closest_entity
 
-    def find_wealthiest_location(self):
-        halite_amount_max = 0
-        best_cell = None
-        for row in self.get_cells():
-            for cell in row:
-                if cell.halite_amount > halite_amount_max:
-                    halite_amount_max = cell.halite_amount
-                    best_cell = cell
+    def sort_cells_by_halite_amount(self):
 
-        return best_cell.position
+        return sorted(reduce(lambda x,y :x+y ,self.get_cells()), reverse=True)
 
     @staticmethod
     def _generate():
