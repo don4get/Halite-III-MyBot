@@ -66,7 +66,7 @@ def step_collect(ship, game_map, position_goals, commands):
 
 
 def step_colonize(ship, game_map, me, position_goals, commands):
-    position_goal = me.ship_states[ship.id].position_goal
+    position_goal = ship.position_goal
     position_goals.append(position_goal)
 
     if ship.position == position_goal:
@@ -74,7 +74,7 @@ def step_colonize(ship, game_map, me, position_goals, commands):
             command = ship.make_dropoff()
         else:
             command = ship.move(Direction.Still)
-            me.ship_states[ship.id].behavior = Behavior.COLLECT
+            ship.behavior = Behavior.COLLECT
 
     else:
         movement = game_map.naive_navigate(ship, position_goal)
