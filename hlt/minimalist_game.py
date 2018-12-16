@@ -85,17 +85,31 @@ class Game:
     def __init__(self):
         self.players = {}
         self.commands = []
-        self.constants = input()
-        self.num_players, self.my_id = map(int, input().split())
+        self.filepath = input()
+        self.lines = tuple(open(self.filepath, 'r'))
+        self.idx = 0
+        self.constants = self.lines[self.idx]
+        # print(self.lines[self.idx])
+        self.idx += 1
+        self.num_players, self.myid = map(int, self.lines[self.idx].split())
+        self.idx += 1
         for player in range(self.num_players):
-            player_id, spawn_x, spawn_y = map(int, input().split())
+            player_id, spawn_x, spawn_y = map(int, self.lines[self.idx].split())
+            self.idx += 1
             self.players[player_id] = Player(player_id, spawn_x, spawn_y)
-        Game.WIDTH, Game.HEIGHT = map(int, input().split())
+        Game.WIDTH, Game.HEIGHT = map(int, self.lines[self.idx].split())
+        self.lines[self.idx]
+        self.idx += 1
         # NOTE this is self.halite[y][x] NOT [x][y]
-        self.halite = [list(map(int, input().split())) for y in range(Game.HEIGHT)]
+        self.halite = [list(map(int, self.lines[self.idx + idx].split())) for idx in range(Game.HEIGHT)]
+        self.idx += Game.HEIGHT
         self.turn = 0
         print("I ♡ CHICHITA!!")
         sys.stdout.flush()
+
+    def get_filename(self):
+        filetemp = self.filepath.split("/")[-1]
+        return filetemp.split(".")[0]
 
     def tiles(self):
         for x in range(Game.WIDTH):
@@ -109,21 +123,27 @@ class Game:
         return self.max_turn() - self.turn
 
     def start_frame(self):
-        self.turn = int(input())
+        self.turn = int(self.lines[self.idx])
+        self.idx += 1
         self.commands = []
         for player in range(self.num_players):
-            player_id, num_ships, num_dropoffs, halite = map(int, input().split())
+            player_id, num_ships, num_dropoffs, halite = map(int, self.lines[self.idx].split())
+            self.idx += 1
             self.players[player_id].reset()
             self.players[player_id].set_halite(halite)
             for ship in range(num_ships):
-                ship_id, ship_x, ship_y, ship_halite = map(int, input().split())
+                ship_id, ship_x, ship_y, ship_halite = map(int, self.lines[self.idx].split())
+                self.idx += 1
                 self.players[player_id].add_ship(Ship(ship_id, ship_x, ship_y, ship_halite))
             for dropoff in range(num_dropoffs):
-                _, drop_x, drop_y = map(int, input().split())
+                _, drop_x, drop_y = map(int, self.lines[self.idx].split())
+                self.idx += 1
                 self.players[player_id].add_dropoff(Position(drop_x, drop_y))
-        updates = int(input())
+        updates = int(self.lines[self.idx])
+        self.idx += 1
         for update in range(updates):
-            hal_x, hal_y, hal_val = map(int, input().split())
+            hal_x, hal_y, hal_val = map(int, self.lines[self.idx].split())
+            self.idx += 1
             self.halite[hal_y][hal_x] = hal_val
 
     def move(self, ship, direction):
@@ -146,8 +166,13 @@ class Game:
 
 
 g = Game()
+file = open(f"maps/{g.get_filename()}.csv", "w")
+list = [g.WIDTH, g.HEIGHT]
+np.savetxt(file, list, delimiter=",")
+file.close()
 for i in range(0, 400):
     g.start_frame()
-    file = open(f"maps/{i}.csv", "w")
+    file = open(f"maps/{g.get_filename()}.csv", "a+")
     array = np.asarray(g.halite)
     np.savetxt(file, array, delimiter=",")
+    file.close()
