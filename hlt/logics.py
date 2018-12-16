@@ -24,6 +24,7 @@ def choose_behavior(ship, game_map, me, turn_number, position_goals, commands):
     # If a ship has no behavior (because it s bare born), make it collect.
     if ship.behavior is None:
         ship.behavior = Behavior.COLLECT
+        ship.home_position = me.shipyard.position
 
     depots = me.get_dropoffs()+[me.shipyard]
     closest_depot = game_map.find_closest_entity(ship.position, depots)

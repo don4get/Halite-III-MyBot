@@ -25,8 +25,9 @@ __status__ = "Production"
 class Banker:
     def __init__(self):
         self._lastProductionCommands = []
+        self.dropoff_count = 0
 
-    def build_ships(self, game):
+    def manage_money(self, game):
         me = game.me
         production_commands = []
         # ship costs 1000, don t make a ship on a ship or they both sink

@@ -1,5 +1,5 @@
 from hlt import logics
-
+from hlt import commands
 
 class Commander:
     def __init__(self):
