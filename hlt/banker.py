@@ -34,7 +34,9 @@ class Banker:
         if game.turn_number < constants.MAX_TURNS-100:
             if len(me.get_ships()) > (len(me.get_dropoffs()) + 1) * 16:
                 if me.halite_amount >= constants.DROPOFF_COST:
-                    self.order_ship_to_colonize(game)
+                    if len([ship for ship in me.get_ships()
+                            if ship.behavior == Behavior.COLONIZE]) == 0:
+                        self.order_ship_to_colonize(game)
 
             elif me.halite_amount >= constants.SHIP_COST and not game.game_map[
                     me.shipyard].is_occupied:

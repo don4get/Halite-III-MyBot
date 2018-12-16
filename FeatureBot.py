@@ -39,6 +39,7 @@ class Bot:
             for ship in self._game.me.get_ships():
                 if(ship.home_position == self._game.me.shipyard.position):
                     ship.home_position = self._game.me.get_dropoffs()[-1].position
+            self._dropoff_count = len(self._game.me.get_dropoffs())
 
 
         commands = []
