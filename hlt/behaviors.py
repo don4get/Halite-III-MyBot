@@ -38,9 +38,11 @@ class Behavior:
 
 def step_deposit(ship, game_map, me, position_goals, commands):
 
-    depots = me.get_dropoffs() + [me.shipyard]
-    closest_depot = game_map.find_closest_entity(ship.position, depots)
-    movement = game_map.naive_navigate(ship, closest_depot.position)
+    # TODO: reenable closest depot logic when navigation is improved
+    #depots = me.get_dropoffs() + [me.shipyard]
+    #closest_depot = game_map.find_closest_entity(ship.position, depots)
+    reference_depot = ship.home_position
+    movement = game_map.naive_navigate(ship, reference_depot)
     upcoming_position = ship.position + Position(*movement)
     if upcoming_position not in position_goals:
         position_goals.append(upcoming_position)

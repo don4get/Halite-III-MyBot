@@ -53,10 +53,11 @@ class Ship(Entity):
     def __init__(self, owner, id, position, halite_amount):
         super().__init__(owner, id, position)
         self.halite_amount = halite_amount
-        self.position_goal = Position(0,0)
+        self.position_goal = Position(0, 0)
         self.behavior = None
         self.is_inspired = False
         self.distance_from_home = 0
+        self.home_position = Position(0, 0)
         self.mission = Mission(Mission_types[HARVEST],  # Mission type
                                [],                      # Path
                                0,                       # Reward
